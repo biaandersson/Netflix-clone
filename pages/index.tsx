@@ -1,9 +1,12 @@
 import Head from 'next/head';
 
-import { Banner, Header, Row } from '../components';
+import { Banner, Header, Modal, Row } from '../components';
 import requests from '../utils/requests';
 import { Movie } from '../types';
 import { NextPage } from 'next';
+import useAuth from '../hooks/useAuth';
+import { useRecoilValue } from 'recoil';
+import { modelState } from '../atoms/modelAtom';
 
 interface IProps {
   netflixOriginals: Movie[];
@@ -16,45 +19,49 @@ interface IProps {
   documentaries: Movie[];
 }
 
-const Home: NextPage<IProps> =
-  ({
-     netflixOriginals,
-     trendingNow,
-     topRated,
-     actionMovies,
-     comedyMovies,
-     horrorMovies,
-     romanceMovies,
-     documentaries,
-   }) => {
-    return (
-      <div
-        className='relative h-screen bg-gradient-to-b  lg:h-[140vh]'>
-        <Head>
-          <title>Home - Netflix</title>
-          <link rel='icon' href='/favicon.ico' />
-        </Head>
-        <Header />
-        <main className='relative pl-4 pb-24 lg:space-y-24 lg:pl-16'>
-          <Banner netflixOriginals={netflixOriginals} />
+const Home: NextPage<IProps> = ({
+  netflixOriginals,
+  trendingNow,
+  topRated,
+  actionMovies,
+  comedyMovies,
+  horrorMovies,
+  romanceMovies,
+  documentaries,
+}) => {
+  const { loading } = useAuth();
 
-          <section className='md:space-y-24'>
-            <Row title='Trending Now' movies={trendingNow} />
-            <Row title='Top Rated' movies={topRated} />
-            <Row title='Action Thrillers' movies={actionMovies} />
+  const showModal = useRecoilValue(modelState);
 
-            {/*{list.length > 0 && <Row title='My List' movies={list} />}*/}
+  if (loading) return null;
 
-            <Row title='Comedy' movies={comedyMovies} />
-            <Row title='Horror' movies={horrorMovies} />
-            <Row title='Romance' movies={romanceMovies} />
-            <Row title='Documentaries' movies={documentaries} />
-          </section>
-        </main>
-        {/* modal */}
-      </div>
-    );
-  };
+  return (
+    <div className='relative h-screen bg-gradient-to-b  lg:h-[140vh]'>
+      <Head>
+        <title>Home - Netflix</title>
+        <link rel='icon' href='/favicon.ico' />
+      </Head>
+      <Header />
+      <main className='relative pl-4 pb-24 lg:space-y-24 lg:pl-16'>
+        <Banner netflixOriginals={netflixOriginals} />
+
+        <section className='md:space-y-24'>
+          <Row title='Trending Now' movies={trendingNow} />
+          <Row title='Top Rated' movies={topRated} />
+          <Row title='Action Thrillers' movies={actionMovies} />
+
+          {/*{list.length > 0 && <Row title='My List' movies={list} />}*/}
+
+          <Row title='Comedy' movies={comedyMovies} />
+          <Row title='Horror' movies={horrorMovies} />
+          <Row title='Romance' movies={romanceMovies} />
+          <Row title='Documentaries' movies={documentaries} />
+        </section>
+      </main>
+      {showModal && <Modal />}
+    </div>
+  );
+};
 
 export default Home;
 
